@@ -14,6 +14,8 @@ import (
 	"github.com/google/gopacket/pcap"
 	"github.com/schollz/find3/server/main/src/models"
 	"github.com/schollz/find3/server/main/src/utils"
+	
+	"golang.org/x/crypto/bcrypt"
 )
 
 // Packet is the struct for the reverse scanning
@@ -80,7 +82,15 @@ func ReverseScan(scanTime time.Duration) (sensors models.SensorData, err error) 
 						break
 					}
 					if doAllPackets || receiver == "ff:ff:ff:ff:ff:ff" {
-						address = transmitter
+						
+							cost := bcrypt.DefaultCost
+							hash, err := bcrypt.GenerateFromPassword([]byte(transmitter), cost)
+
+							if err != nil {
+								hash = nil
+							}
+						
+						address = hash
 					}
 				}
 			}
